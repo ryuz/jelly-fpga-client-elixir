@@ -145,6 +145,42 @@ defmodule JellyFpgaControl do
     end
   end
 
+  def open_uio(channel, name, unit \\ 0) do
+    request = %JellyFpgaControl.OpenUioRequest{
+      name: name,
+      unit: unit
+    }
+    case JellyFpgaControl.JellyFpgaControl.Stub.open_uio(channel, request) do
+      {:ok, %JellyFpgaControl.OpenResponse{result: true, id: id}} -> {:ok, id}
+      {:ok, %JellyFpgaControl.OpenResponse{result: false}} -> {:error, :open_mmap_failed}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def open_udmabuf(channel, name, cache_enable, unit \\ 0) do
+    request = %JellyFpgaControl.OpenUdmabufRequest{
+      name: name,
+      cache_enable: cache_enable,
+      unit: unit
+    }
+    case JellyFpgaControl.JellyFpgaControl.Stub.open_udmabuf(channel, request) do
+      {:ok, %JellyFpgaControl.OpenResponse{result: true, id: id}} -> {:ok, id}
+      {:ok, %JellyFpgaControl.OpenResponse{result: false}} -> {:error, :open_mmap_failed}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def subclone(channel, id, offset, size, unit \\ 0) do
+    request = %JellyFpgaControl.SubcloneRequest{id: id, offset: offset, size: size, unit: unit}
+
+    case JellyFpgaControl.JellyFpgaControl.Stub.subclone(channel, request) do
+      {:ok, %JellyFpgaControl.OpenResponse{result: true, id: id}} -> {:ok, id}
+      {:ok, %JellyFpgaControl.OpenResponse{result: false}} -> {:error, :open_mmap_failed}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+
   def write_mem_u(channel, id, offset, data, size) do
     request = %JellyFpgaControl.WriteMemURequest{id: id, offset: offset, data: data, size: size}
 
@@ -201,7 +237,7 @@ defmodule JellyFpgaControl do
     request = %JellyFpgaControl.ReadMemRequest{id: id, offset: offset, size: size}
     case JellyFpgaControl.JellyFpgaControl.Stub.read_mem_u(channel, request) do
       {:ok, %JellyFpgaControl.ReadUResponse{result: true,  data: data}} -> {:ok, data}
-      {:ok, %JellyFpgaControl.ReadUResponse{result: false, data: _}} -> {:error, :write_mem_failed}
+      {:ok, %JellyFpgaControl.ReadUResponse{result: false, data: _}} -> {:error, :read_mem_failed}
       {:error, reason} -> {:error, reason}
     end
   end
@@ -226,7 +262,7 @@ defmodule JellyFpgaControl do
     request = %JellyFpgaControl.ReadMemRequest{id: id, offset: offset, size: size}
     case JellyFpgaControl.JellyFpgaControl.Stub.read_mem_i(channel, request) do
       {:ok, %JellyFpgaControl.ReadIResponse{result: true,  data: data}} -> {:ok, data}
-      {:ok, %JellyFpgaControl.ReadIResponse{result: false, data: _}} -> {:error, :write_mem_failed}
+      {:ok, %JellyFpgaControl.ReadIResponse{result: false, data: _}} -> {:error, :read_mem_failed}
       {:error, reason} -> {:error, reason}
     end
   end
@@ -246,5 +282,109 @@ defmodule JellyFpgaControl do
   def read_mem_i64(channel, id, offset) do
     read_mem_i(channel, id, offset, 8)
   end
+
+
+  def write_reg_u(channel, id, reg, data, size) do
+    request = %JellyFpgaControl.WriteRegURequest{id: id, reg: reg, data: data, size: size}
+
+    case JellyFpgaControl.JellyFpgaControl.Stub.write_reg_u(channel, request) do
+      {:ok, %JellyFpgaControl.BoolResponse{result: true}} -> :ok
+      {:ok, %JellyFpgaControl.BoolResponse{result: false}} -> {:error, :write_reg_failed}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def write_reg_u8(channel, id, reg, data) do
+    write_reg_u(channel, id, reg, data, 1)
+  end
+
+  def write_reg_u16(channel, id, reg, data) do
+    write_reg_u(channel, id, reg, data, 2)
+  end
+
+  def write_reg_u32(channel, id, reg, data) do
+    write_reg_u(channel, id, reg, data, 4)
+  end
+
+  def write_reg_u64(channel, id, reg, data) do
+    write_reg_u(channel, id, reg, data, 8)
+  end
+
+  def write_reg_i(channel, id, reg, data, size) do
+    request = %JellyFpgaControl.WriteRegIRequest{id: id, reg: reg, data: data, size: size}
+
+    case JellyFpgaControl.JellyFpgaControl.Stub.write_reg_i(channel, request) do
+      {:ok, %JellyFpgaControl.BoolResponse{result: true}} -> :ok
+      {:ok, %JellyFpgaControl.BoolResponse{result: false}} -> {:error, :write_reg_failed}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def write_reg_i8(channel, id, reg, data) do
+    write_reg_i(channel, id, reg, data, 1)
+  end
+
+  def write_reg_i16(channel, id, reg, data) do
+    write_reg_i(channel, id, reg, data, 2)
+  end
+
+  def write_reg_i32(channel, id, reg, data) do
+    write_reg_i(channel, id, reg, data, 4)
+  end
+
+  def write_reg_i64(channel, id, reg, data) do
+    write_reg_i(channel, id, reg, data, 8)
+  end
+
+  def read_reg_u(channel, id, reg, size) do
+    request = %JellyFpgaControl.ReadRegRequest{id: id, reg: reg, size: size}
+    case JellyFpgaControl.JellyFpgaControl.Stub.read_reg_u(channel, request) do
+      {:ok, %JellyFpgaControl.ReadUResponse{result: true,  data: data}} -> {:ok, data}
+      {:ok, %JellyFpgaControl.ReadUResponse{result: false, data: _}} -> {:error, :read_reg_failed}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def read_reg_u8(channel, id, reg) do
+    read_reg_u(channel, id, reg, 1)
+  end
+
+  def read_reg_u16(channel, id, reg) do
+    read_reg_u(channel, id, reg, 2)
+  end
+
+  def read_reg_u32(channel, id, reg) do
+    read_reg_u(channel, id, reg, 4)
+  end
+
+  def read_reg_u64(channel, id, reg) do
+    read_reg_u(channel, id, reg, 8)
+  end
+
+  def read_reg_i(channel, id, reg, size) do
+    request = %JellyFpgaControl.ReadRegRequest{id: id, reg: reg, size: size}
+    case JellyFpgaControl.JellyFpgaControl.Stub.read_reg_i(channel, request) do
+      {:ok, %JellyFpgaControl.ReadIResponse{result: true,  data: data}} -> {:ok, data}
+      {:ok, %JellyFpgaControl.ReadIResponse{result: false, data: _}} -> {:error, :read_reg_failed}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def read_reg_i8(channel, id, reg) do
+    read_reg_i(channel, id, reg, 1)
+  end
+
+  def read_reg_i16(channel, id, reg) do
+    read_reg_i(channel, id, reg, 2)
+  end
+
+  def read_reg_i32(channel, id, reg) do
+    read_reg_i(channel, id, reg, 4)
+  end
+
+  def read_reg_i64(channel, id, reg) do
+    read_reg_i(channel, id, reg, 8)
+  end
+
 
 end
