@@ -170,4 +170,81 @@ defmodule JellyFpgaControl do
   def write_mem_u64(channel, id, offset, data) do
     write_mem_u(channel, id, offset, data, 8)
   end
+
+  def write_mem_i(channel, id, offset, data, size) do
+    request = %JellyFpgaControl.WriteMemIRequest{id: id, offset: offset, data: data, size: size}
+
+    case JellyFpgaControl.JellyFpgaControl.Stub.write_mem_i(channel, request) do
+      {:ok, %JellyFpgaControl.BoolResponse{result: true}} -> :ok
+      {:ok, %JellyFpgaControl.BoolResponse{result: false}} -> {:error, :write_mem_failed}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def write_mem_i8(channel, id, offset, data) do
+    write_mem_i(channel, id, offset, data, 1)
+  end
+
+  def write_mem_i16(channel, id, offset, data) do
+    write_mem_i(channel, id, offset, data, 2)
+  end
+
+  def write_mem_i32(channel, id, offset, data) do
+    write_mem_i(channel, id, offset, data, 4)
+  end
+
+  def write_mem_i64(channel, id, offset, data) do
+    write_mem_i(channel, id, offset, data, 8)
+  end
+
+  def read_mem_u(channel, id, offset, size) do
+    request = %JellyFpgaControl.ReadMemRequest{id: id, offset: offset, size: size}
+    case JellyFpgaControl.JellyFpgaControl.Stub.read_mem_u(channel, request) do
+      {:ok, %JellyFpgaControl.ReadUResponse{result: true,  data: data}} -> {:ok, data}
+      {:ok, %JellyFpgaControl.ReadUResponse{result: false, data: _}} -> {:error, :write_mem_failed}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def read_mem_u8(channel, id, offset) do
+    read_mem_u(channel, id, offset, 1)
+  end
+
+  def read_mem_u16(channel, id, offset) do
+    read_mem_u(channel, id, offset, 2)
+  end
+
+  def read_mem_u32(channel, id, offset) do
+    read_mem_u(channel, id, offset, 4)
+  end
+
+  def read_mem_u64(channel, id, offset) do
+    read_mem_u(channel, id, offset, 8)
+  end
+
+  def read_mem_i(channel, id, offset, size) do
+    request = %JellyFpgaControl.ReadMemRequest{id: id, offset: offset, size: size}
+    case JellyFpgaControl.JellyFpgaControl.Stub.read_mem_i(channel, request) do
+      {:ok, %JellyFpgaControl.ReadIResponse{result: true,  data: data}} -> {:ok, data}
+      {:ok, %JellyFpgaControl.ReadIResponse{result: false, data: _}} -> {:error, :write_mem_failed}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def read_mem_i8(channel, id, offset) do
+    read_mem_i(channel, id, offset, 1)
+  end
+
+  def read_mem_i16(channel, id, offset) do
+    read_mem_i(channel, id, offset, 2)
+  end
+
+  def read_mem_i32(channel, id, offset) do
+    read_mem_i(channel, id, offset, 4)
+  end
+
+  def read_mem_i64(channel, id, offset) do
+    read_mem_i(channel, id, offset, 8)
+  end
+
 end
