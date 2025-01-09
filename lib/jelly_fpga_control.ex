@@ -111,7 +111,7 @@ defmodule JellyFpgaControl do
 
     case JellyFpgaControl.JellyFpgaControl.Stub.dts_to_dtb(channel, request) do
       {:ok, %JellyFpgaControl.DtsToDtbResponse{result: true, dtb: dtb}} -> {:ok, dtb}
-      {:ok, %JellyFpgaControl.DtsToDtbResponse{result: false}} -> {:error, :load_dtbo_failed}
+      {:ok, %JellyFpgaControl.DtsToDtbResponse{result: false, dtb: _}} -> {:error, :load_dtbo_failed}
       {:error, reason} -> {:error, reason}
     end
   end
@@ -140,7 +140,7 @@ defmodule JellyFpgaControl do
 
     case JellyFpgaControl.JellyFpgaControl.Stub.open_mmap(channel, request) do
       {:ok, %JellyFpgaControl.OpenResponse{result: true, id: id}} -> {:ok, id}
-      {:ok, %JellyFpgaControl.OpenResponse{result: false}} -> {:error, :open_mmap_failed}
+      {:ok, %JellyFpgaControl.OpenResponse{result: false, id: _}} -> {:error, :open_mmap_failed}
       {:error, reason} -> {:error, reason}
     end
   end
@@ -152,7 +152,7 @@ defmodule JellyFpgaControl do
     }
     case JellyFpgaControl.JellyFpgaControl.Stub.open_uio(channel, request) do
       {:ok, %JellyFpgaControl.OpenResponse{result: true, id: id}} -> {:ok, id}
-      {:ok, %JellyFpgaControl.OpenResponse{result: false}} -> {:error, :open_mmap_failed}
+      {:ok, %JellyFpgaControl.OpenResponse{result: false, id: _}} -> {:error, :open_mmap_failed}
       {:error, reason} -> {:error, reason}
     end
   end
@@ -165,7 +165,7 @@ defmodule JellyFpgaControl do
     }
     case JellyFpgaControl.JellyFpgaControl.Stub.open_udmabuf(channel, request) do
       {:ok, %JellyFpgaControl.OpenResponse{result: true, id: id}} -> {:ok, id}
-      {:ok, %JellyFpgaControl.OpenResponse{result: false}} -> {:error, :open_mmap_failed}
+      {:ok, %JellyFpgaControl.OpenResponse{result: false, id: _}} -> {:error, :open_mmap_failed}
       {:error, reason} -> {:error, reason}
     end
   end
@@ -175,7 +175,7 @@ defmodule JellyFpgaControl do
 
     case JellyFpgaControl.JellyFpgaControl.Stub.subclone(channel, request) do
       {:ok, %JellyFpgaControl.OpenResponse{result: true, id: id}} -> {:ok, id}
-      {:ok, %JellyFpgaControl.OpenResponse{result: false}} -> {:error, :open_mmap_failed}
+      {:ok, %JellyFpgaControl.OpenResponse{result: false, id: _}} -> {:error, :open_mmap_failed}
       {:error, reason} -> {:error, reason}
     end
   end
