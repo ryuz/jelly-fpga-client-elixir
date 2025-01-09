@@ -13,8 +13,8 @@ defmodule JellyFpgaControl do
     request = %JellyFpgaControl.UnloadRequest{slot: slot}
 
     case JellyFpgaControl.JellyFpgaControl.Stub.unload(channel, request) do
-      {:ok, %JellyFpgaControl.BoolResponse{result: true}} -> :ok
-      {:ok, %JellyFpgaControl.BoolResponse{result: false}} -> {:error, :unload_failed}
+      {:ok, %JellyFpgaControl.LoadResponse{result: true, slot: slot}} -> {:ok, slot}
+      {:ok, %JellyFpgaControl.LoadResponse{result: false,slot: _ }} -> {:error, :unload_failed}
       {:error, reason} -> {:error, reason}
     end
   end
